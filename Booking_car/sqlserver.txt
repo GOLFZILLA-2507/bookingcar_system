@@ -1,0 +1,67 @@
+CREATE TABLE Employee (
+    id INT IDENTITY PRIMARY KEY, -- รหัสอัตโนมัติ (เป็น PRIMARY KEY)
+    EmployeeID NVARCHAR(50) NOT NULL UNIQUE, -- รหัสพนักงาน (เป็น UNIQUE และไม่ซ้ำกัน)
+    password NVARCHAR(255) NOT NULL, -- รหัสผ่าน (แนะนำให้เข้ารหัสรหัสผ่าน)
+    fullname NVARCHAR(100) NOT NULL, -- ชื่อเต็มของผู้ใช้งาน
+    position NVARCHAR(50) NULL, -- ตำแหน่งงาน
+    department NVARCHAR(50) NULL, -- แผนก
+    site NVARCHAR(50) NULL, -- ที่ตั้ง
+    [level] FLOAT NOT NULL DEFAULT 1, -- ระดับของผู้ใช้งาน (เช่น 1 = พนักงาน, 2 = ผู้จัดการ, 3 = ผู้ดูแลระบบ)
+    email NVARCHAR(100) NULL, -- อีเมล
+    tel NVARCHAR(50) NULL, -- เบอร์โทรศัพท์
+    pic IMAGE NULL, -- รูปภาพของผู้ใช้งาน
+    chgpass INT NOT NULL DEFAULT 0, -- ตัวบ่งชี้ว่าผู้ใช้เปลี่ยนรหัสผ่านแล้วหรือยัง (0 = ไม่เปลี่ยน, 1 = เปลี่ยนแล้ว)
+    role NVARCHAR(50) NOT NULL, -- สิทธิ์ของผู้ใช้งาน เช่น 'employee', 'manager', 'admin'
+    active INT NOT NULL DEFAULT 1 -- สถานะการใช้งาน (1 = เปิดใช้งาน, 0 = ปิดใช้งาน)
+);
+
+CREATE TABLE leave_requests (
+    leave_id INT PRIMARY KEY IDENTITY, -- รหัสคำขอลา
+    leave_type NVARCHAR(50) NOT NULL, -- ประเภทการลา เช่น ลาป่วย, ลากิจ, พักร้อน
+    EmployeeID NVARCHAR(50) NOT NULL, -- ผู้ขอลา (เชื่อมโยงกับ Employee.EmployeeID)
+    submit_leave DATE NOT NULL, -- วันที่ส่งคำขอลา
+    start_date_leave DATE NOT NULL, -- วันที่เริ่มลาจริง
+    end_date_leave DATE NOT NULL, -- วันที่สิ้นสุดการลา
+    sick_day INT DEFAULT 0, -- จำนวนวันที่ลาป่วย
+    sick_hr INT DEFAULT 0, -- จำนวนชั่วโมงที่ลาป่วย
+    business_day INT DEFAULT 0, -- จำนวนวันที่ลากิจ
+    business_hr INT DEFAULT 0, -- จำนวนชั่วโมงที่ลากิจ
+    holiday_day INT DEFAULT 0, -- จำนวนวันลาพักร้อนที่ขอ
+    holiday_hr INT DEFAULT 0, -- จำนวนชั่วโมงลาพักร้อนที่ขอ
+    holiday_day_used INT DEFAULT 0, -- จำนวนวันลาพักร้อนที่ใช้ไป
+    holiday_hr_used INT DEFAULT 0, -- จำนวนชั่วโมงลาพักร้อนที่ใช้ไป
+    leave_day INT DEFAULT 0, -- จำนวนวันลาโดยรวม
+    leave_hr INT DEFAULT 0, -- จำนวนชั่วโมงลาโดยรวม
+    detail TEXT NULL, -- รายละเอียดเพิ่มเติมของการลา
+    approve_1 NVARCHAR(50) NULL, -- ผู้อนุมัติคนที่ 1
+    approve_2 NVARCHAR(50) NULL, -- ผู้อนุมัติคนที่ 2
+    status_approve_1 NVARCHAR(50) NULL, -- สถานะอนุมัติจากผู้อนุมัติคนที่ 1
+    status_approve_2 NVARCHAR(50) NULL, -- สถานะอนุมัติจากผู้อนุมัติคนที่ 2
+    status INT DEFAULT 0, -- สถานะคำขอลา (0 = Pending, 1 = Approved, 2 = Rejected)
+    CONSTRAINT FK_leave_requests_employee FOREIGN KEY (EmployeeID) REFERENCES Employee(EmployeeID) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE TABLE annual_leave_2568 (
+    id INT PRIMARY KEY IDENTITY, -- รหัสข้อมูลการลา
+    EmployeeID NVARCHAR(50) NOT NULL, -- ผู้ใช้งาน (เชื่อมโยงกับ Employee.EmployeeID)
+    late_time INT DEFAULT 0, -- จำนวนครั้งที่มาสาย
+    late_hr INT DEFAULT 0, -- ชั่วโมงที่มาสาย
+    sick_day INT DEFAULT 0, -- จำนวนวันที่ลาป่วย
+    sick_hr INT DEFAULT 0, -- จำนวนชั่วโมงที่ลาป่วย
+    sick_day_used INT DEFAULT 0, -- จำนวนวันที่ลาป่วยที่ใช้ไป
+    sick_hr_used INT DEFAULT 0, -- จำนวนชั่วโมงที่ลาป่วยที่ใช้ไป
+    business_day INT DEFAULT 0, -- จำนวนวันที่ลากิจ
+    business_hr INT DEFAULT 0, -- จำนวนชั่วโมงที่ลากิจ
+    business_day_used INT DEFAULT 0, -- จำนวนวันที่ลากิจที่ใช้ไป
+    business_hr_used INT DEFAULT 0, -- จำนวนชั่วโมงที่ลากิจที่ใช้ไป
+    holiday_day INT DEFAULT 0, -- จำนวนวันลาพักร้อนที่ขอ
+    holiday_hr INT DEFAULT 0, -- จำนวนชั่วโมงลาพักร้อนที่ขอ
+    holiday_day_used INT DEFAULT 0, -- จำนวนวันลาพักร้อนที่ใช้ไป
+    holiday_hr_used INT DEFAULT 0, -- จำนวนชั่วโมงลาพักร้อนที่ใช้ไป
+    leave_day INT DEFAULT 0, -- จำนวนวันลาโดยรวม
+    leave_hr INT DEFAULT 0, -- จำนวนชั่วโมงลาโดยรวม
+    leave_day_used INT DEFAULT 0, -- จำนวนวันลาที่ใช้ไป
+    leave_hr_used INT DEFAULT 0, -- จำนวนชั่วโมงลาที่ใช้ไป
+    warning_notice NVARCHAR(50) NULL, -- การแจ้งเตือน เช่น "Warning" หากใช้ลาเกิน
+    CONSTRAINT FK_annual_leave_employee FOREIGN KEY (EmployeeID) REFERENCES Employee(EmployeeID)
+);

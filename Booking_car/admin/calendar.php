@@ -1,0 +1,70 @@
+<?php
+require_once '../config/connect.php';
+require_once '../config/checklogin.php';
+
+// ตรวจสอบสิทธิ์ admin
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
+    header('Location: ../index.php');
+    exit;
+}
+
+include 'partials/header.php';
+include 'partials/sidebar.php';
+
+// ดึงรายการจองเฉพาะที่อนุมัติแล้ว
+$stmt = $conn->prepare(
+    "SELECT id, full_name, destination, start_date, start_time, end_date, end_time
+     FROM travel_bookings
+     WHERE booking_status = 'อนุมัติแล้ว'"
+);
+$stmt->execute();
+$events = [];
+
+while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+    // รวมวันที่และเวลาเป็น ISO8601
+    $start = $row['start_date'] . 'T' . substr($row['start_time'], 0, 5);
+    $end   = $row['end_date']   . 'T' . substr($row['end_time'], 0, 5);
+
+    $events[] = [
+        'id'    => $row['id'],
+        'title' => $row['full_name'] . ' - ' . $row['destination'], // ชื่อและปลายทาง
+        'start' => $start,
+        'end'   => $end,
+        'color' => '#28a745' // สีเขียวสำหรับอีเวนต์ที่อนุมัติ
+    ];
+}
+?>
+
+<div class="content">
+  <h1 class="mb-4">ปฏิทินการจองรถ </h1>
+  <!-- ปรับขนาดปฏิทินให้เต็มพื้นที่ -->
+  <div id="calendar" style="width:100%; height:calc(100vh - 200px);"></div>
+</div>
+</div>
+
+<!-- FullCalendar CSS & JS -->
+<link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var calendarEl = document.getElementById('calendar');
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+      initialView: 'dayGridMonth',
+      headerToolbar: {
+        left: 'prev,next today',
+        center: 'title',
+        right: 'dayGridMonth,timeGridWeek,timeGridDay'
+      },
+      locale: 'th',
+      displayEventTime: false, // ไม่แสดงเวลาในอีเวนต์
+      events: <?php echo json_encode($events, JSON_HEX_TAG); ?>,
+      eventClick: function(info) {
+        window.location = 'manage_booking.php?id=' + info.event.id;
+      }
+    });
+    calendar.render();
+  });
+</script>
+
+<?php include 'partials/footer.php'; ?>

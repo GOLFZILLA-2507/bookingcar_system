@@ -1,0 +1,31 @@
+//สร้างตาราง cars 
+CREATE TABLE cars (
+    id INT IDENTITY(1,1) PRIMARY KEY,          -- รหัสประจำรถ (เพิ่มอัตโนมัติ เป็น Primary Key)
+    car_name NVARCHAR(255) NOT NULL,           -- ชื่อรถ เช่น Toyota Fortuner
+    license_plate NVARCHAR(50) NOT NULL,       -- ทะเบียนรถ
+    car_type NVARCHAR(100),                    -- ประเภทรถ เช่น รถเก๋ง, รถตู้
+    status NVARCHAR(50),                       -- สถานะของรถ เช่น ว่าง, ไม่ว่าง, ซ่อม
+    created_at DATETIME DEFAULT GETDATE()      -- วันที่เพิ่มข้อมูล (บันทึกอัตโนมัติเป็นวันเวลาปัจจุบัน)
+);
+
+//สร้างตาราง travel_bookings
+CREATE TABLE travel_bookings (
+    id INT IDENTITY(1,1) PRIMARY KEY,              -- รหัสการจอง (Primary Key, เพิ่มอัตโนมัติ)
+    full_name NVARCHAR(255) NOT NULL,              -- ชื่อ-นามสกุลผู้จอง
+    position NVARCHAR(100),                        -- ตำแหน่งของผู้จอง
+    department NVARCHAR(100),                      -- แผนกของผู้จอง
+    companions NVARCHAR(MAX),                      -- ผู้ร่วมเดินทาง (อาจมีหลายชื่อ)
+    destination NVARCHAR(255) NOT NULL,            -- ปลายทางที่ต้องการเดินทางไป
+    start_date DATE NOT NULL,                      -- วันที่เริ่มเดินทาง
+    start_time TIME NOT NULL,                      -- เวลาเริ่มเดินทาง
+    end_date DATE NOT NULL,                        -- วันที่สิ้นสุดการเดินทาง
+    end_time TIME NOT NULL,                        -- เวลาสิ้นสุดการเดินทาง
+    additional_details NVARCHAR(MAX),              -- รายละเอียดเพิ่มเติมเกี่ยวกับการเดินทาง
+    employee_id NVARCHAR(50),                      -- รหัสพนักงาน (ถ้ามี)
+    
+    car_name NVARCHAR(255),                        -- ชื่อรถที่จัดให้ (เก็บซ้ำไว้เพื่อบันทึกตามช่วงเวลานั้น)
+    license_plate NVARCHAR(50),                    -- ทะเบียนรถที่ใช้ (เก็บซ้ำไว้เพื่อความถูกต้องในประวัติ)
+    booking_status NVARCHAR(50) DEFAULT 'รอดำเนินการ', -- สถานะการจอง เช่น รอดำเนินการ, อนุมัติแล้ว, ปฏิเสธ
+    car_id INT,                                    -- รหัสรถที่ใช้ (เชื่อมโยงกับตาราง cars)
+    car_type NVARCHAR(100)                         -- ประเภทรถ (เก็บไว้แสดงผลรวดเร็ว เช่น รถเก๋ง, รถตู้)
+);

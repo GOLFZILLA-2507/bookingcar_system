@@ -26,7 +26,9 @@
                 <li class="nav-item">
     <a class="nav-link" href="approval_dashboard.php">📝 อนุมัติรายการ</a>
 </li>
-
+                <li class="nav-item">
+                    <a class="nav-link" href="calendar.php">📅 ปฏิทินการจอง</a>
+                </li>
             </ul>
 
             <span class="navbar-text">

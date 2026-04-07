@@ -34,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
             else{
                 echo "Hi Welcome Back user<br />";   
-                echo "<script>window.location='user/previewbook.php'; </script>";
+                echo "<script>window.location='user/calendar.php'; </script>";
             }
             exit();
         }
